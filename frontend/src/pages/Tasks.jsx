@@ -16,6 +16,13 @@ function Tasks() {
   }
 
   const [tasks, setTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    priority: "Low",
+    status: "Pending",
+  });
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     async function fetchTasks() {
@@ -34,6 +41,47 @@ function Tasks() {
     fetchTasks();
   }, []);
 
+
+  const handleSave = async () => {
+    try {  
+      const response = await axios.put(
+        `http://localhost:3000/update-task/${selectedTask._id}`,
+        formData,
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task._id === selectedTask._id ? { ...task, ...formData } : task
+          )
+        );
+        setShowForm(false);
+        setSelectedTask(null);
+      }
+    } catch (error) {
+      alert("Error updating task: " + error.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/delete-task/${selectedTask._id}`,
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        setTasks((prevTasks) =>
+          prevTasks.filter((task) => task._id !== selectedTask._id)
+        );
+        setShowForm(false);
+        setSelectedTask(null);
+      }
+    }
+    catch (error) {
+      alert("Error deleting task: " + error.message);
+    }
+  }
+
   return (
     <div className="w-full h-fit border-1 border-gray-300 rounded-2xl p-2">
       {tasks.map((categoryGroup, index) => (
@@ -49,6 +97,7 @@ function Tasks() {
           {/* Table */}
           <div>
             <table className="min-w-full border-collapse">
+
               <thead>
                 <tr className="bg-gray text-sm text-gray-500">
                   <th className="px-4 py-2 text-left">Task Name</th>
@@ -61,10 +110,22 @@ function Tasks() {
 
               <tbody>
                 {/* Loop through tasks in this category */}
-                {categoryGroup.tasks.map((task) => (
+                {categoryGroup.tasks.map((task) => 
+                (
                   <tr
                     key={task._id}
                     className="border-b text-gray-600 border-gray-200 hover:bg-gray-50"
+                    onClick={() => {
+                      // Handle task click if needed
+                      setSelectedTask(task);
+                      setFormData({
+                        name: task.name,
+                        priority: task.priority,
+                        status: task.status,
+                      })
+                      setShowForm(true);
+                    }
+                    }
                   >
                     <td className="px-4 py-2">{task.name}</td>
                     <td className="px-4 py-2">{task.startDate}</td>
@@ -102,6 +163,73 @@ function Tasks() {
           </div>
         </div>
       ))}
+
+
+      {showForm && selectedTask && (
+        <div className="fixed inset-0 bg-opacity-40 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl w-96 shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Edit Task</h2>
+
+            {/* Task Name */}
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="border p-2 px-3 w-full mb-3 rounded-lg"
+              placeholder="Task Name"
+            />
+
+            {/* Priority */}
+            <select
+              value={formData.priority}
+              onChange={(e) =>
+                setFormData({ ...formData, priority: e.target.value })
+              }
+              className="border p-2 px-3 w-full mb-3 rounded-lg"
+            >
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+
+            {/* Status */}
+            <select
+              value={formData.status}
+              onChange={(e) =>
+                setFormData({ ...formData, status: e.target.value })
+              }
+              className="border p-2 px-3 w-full mb-3 rounded-lg"
+            >
+              <option>Pending</option>
+              <option>In Progress</option>
+              <option>Completed</option>
+            </select>
+
+            {/* Buttons */}
+            <div className="flex justify-between">
+              <button
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+                onClick={() => setShowForm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                onClick={handleSave}
+              >
+                Save
+              </button>
+              <button
+                className="bg-red-500 hover:bg-red-600  text-white px-4 py-2 rounded-lg"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

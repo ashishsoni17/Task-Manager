@@ -6,6 +6,7 @@ const router = Router();
 
 router.route('/create-tasks').post(verifyJWT, createTask);
 router.route('/get-tasks').get(verifyJWT, getTasks);
-
+router.route('/update-task/:taskId').put(verifyJWT, updateTask);
+router.route('/delete-task/:taskId').delete(verifyJWT, deleteTask);
 
 export default router;

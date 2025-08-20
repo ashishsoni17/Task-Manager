@@ -14,8 +14,8 @@ function Sidebar() {
   ] 
 
   return (
-    <div className="w-52 h-dvh flex flex-row bg-gray-200 p-1">
-      <div className="w-52 h-full flex flex-col ">
+    <div className="w-56 h-dvh flex flex-row  bg-gray-200 p-1">
+      <div className="w-full h-full flex flex-col ">
         <div className="mt-5 mx-2 text-xl font-serif text-blue-700">
           TaskManager
         </div>
@@ -27,11 +27,11 @@ function Sidebar() {
                 key={item.name}
                 to={item.path}
                 className= {
-                  ({ isActive }) => `flex items-center px-5 py-2 text-md ${isActive ? "bg-blue-200 " : ""} `
+                  ({ isActive }) => `flex items-center px-5 py-2 text-md hover:bg-blue-200 ${isActive ? "bg-blue-200  border-l-4 border-blue-600 rounded-none" : ""}`
                 }
               >
                 {item.icon}
-                <div className="hidden lg:block lg:ml-5 ">{item.name}</div>
+                <div className="md:flex md:flex-3/4 hidden md:ml-5 ">{item.name}</div>
               </NavLink>
             ) )
           }
@@ -82,6 +82,7 @@ function Sidebar() {
             </svg>
           </div>
         </div>
+
       </div>
     </div>
   );
