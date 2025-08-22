@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { Dashboard, Projects, Tasks, Todo, Help } from "../src/pages/index.js";
+import { Dashboard, Projects, Tasks, Activity, Help } from "../src/pages/index.js";
 import { AuthLayout } from "./components/index.js";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
@@ -25,7 +25,7 @@ function App() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="projects" element={<Projects />} />
         <Route path="tasks" element={<Tasks />} />
-        <Route path="todo" element={<Todo />} />
+        <Route path="activity" element={<Activity />} />
         <Route path="help" element={<Help />} />
         
       </Route>

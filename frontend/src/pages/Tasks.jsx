@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 function Tasks() {
+
+
+  const searchQuery = useSelector((state) => state.search.query.toLowerCase());
+  
   const color = [
-    "text-red-300",
-    "text-blue-300",
-    "text-purple-300",
-    "text-cyan-300",
-    "text-green-300",
-    "text-orange-300",
+    "text-red-400",
+    "text-blue-400",
+    "text-purple-400",
+    "text-cyan-400",
+    "text-green-400",
+    "text-orange-400",
   ];
 
   function getRandomColor() {
@@ -19,10 +24,13 @@ function Tasks() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
+    dueDate: "",
     priority: "Low",
     status: "Pending",
   });
   const [showForm, setShowForm] = useState(false);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+
 
   useEffect(() => {
     async function fetchTasks() {
@@ -33,6 +41,7 @@ function Tasks() {
 
         if (response.status === 200) {
           setTasks(response.data.tasks);
+          setFilteredTasks(response.data.tasks);
         }
       } catch (error) {
         alert("Error fetching tasks:" + error.message);
@@ -41,9 +50,33 @@ function Tasks() {
     fetchTasks();
   }, []);
 
+  useEffect( () => {
+    if(tasks.length > 0){
+      handleSearch(searchQuery);
+    }
+  },[searchQuery,tasks]) 
+  
+
+  const handleSearch = (searchQuery) => {
+
+    if (!searchQuery) {
+      setFilteredTasks(tasks);
+    }
+
+    const filter = tasks.map( (categoryGroup) => ({
+      ...categoryGroup,
+      tasks : categoryGroup.tasks.filter( (task) => (
+        task.name.toLowerCase().includes(searchQuery)      
+      ))
+    })
+    )
+    .filter((categoryGroup) => categoryGroup.tasks.length > 0); 
+
+    setFilteredTasks(filter);
+  } ;
 
   const handleSave = async () => {
-    try {  
+    try {
       const response = await axios.put(
         `http://localhost:3000/update-task/${selectedTask._id}`,
         formData,
@@ -76,18 +109,26 @@ function Tasks() {
         setShowForm(false);
         setSelectedTask(null);
       }
-    }
-    catch (error) {
+    } catch (error) {
       alert("Error deleting task: " + error.message);
     }
-  }
+  };
 
   return (
-    <div className="w-full h-fit border-1 border-gray-300 rounded-2xl p-2">
-      {tasks.map((categoryGroup, index) => (
+    
+    <div className="w-full h-fit border-1 border-gray-100 rounded-2xl p-2">
+      
+      {filteredTasks.length === 0 ? (
+        <div className="flex items-center justify-center">
+          <div className="w-3/4 h-20 flex items-center justify-center text-gray-400">
+            No tasks found.
+          </div>
+        </div>
+      ) :
+      filteredTasks.map((categoryGroup, index) => (
         <div key={index} className="mb-6">
           <div
-            className={` flex flex-row items-center w-full h-10 border border-gray-300 rounded-xl`}
+            className={`z-5 shadow-sm hover:shadow-md hover:z-15 flex flex-row items-center w-full h-10 border border-gray-300 rounded-xl`}
           >
             <ul className="list-disc list-inside mx-2">
               <li className={getRandomColor()}>{categoryGroup.category}</li>
@@ -97,21 +138,19 @@ function Tasks() {
           {/* Table */}
           <div>
             <table className="min-w-full border-collapse">
-
               <thead>
-                <tr className="bg-gray text-sm text-gray-500">
+                <tr className="bg-gray text-sm text-gray-500 w-full">
                   <th className="px-4 py-2 text-left">Task Name</th>
-                  <th className="px-4 py-2 text-left">Start Date</th>
-                  <th className="px-4 py-2 text-left">Due Date</th>
-                  <th className="px-4 py-2 text-left">Priority</th>
-                  <th className="px-4 py-2 text-left">Status</th>
+                  <th className="px-4 py-2 text-left w-1/6">Start Date</th>
+                  <th className="px-4 py-2 text-left w-1/6">Due Date</th>
+                  <th className="px-4 py-2 text-left w-1/6">Priority</th>
+                  <th className="px-4 py-2 text-left w-1/6">Status</th>
                 </tr>
               </thead>
 
               <tbody>
                 {/* Loop through tasks in this category */}
-                {categoryGroup.tasks.map((task) => 
-                (
+                {categoryGroup.tasks.map((task) => (
                   <tr
                     key={task._id}
                     className="border-b text-gray-600 border-gray-200 hover:bg-gray-50"
@@ -120,16 +159,28 @@ function Tasks() {
                       setSelectedTask(task);
                       setFormData({
                         name: task.name,
+                        dueDate: task.endDate,
                         priority: task.priority,
                         status: task.status,
-                      })
+                      });
                       setShowForm(true);
-                    }
-                    }
+                    }}
                   >
                     <td className="px-4 py-2">{task.name}</td>
-                    <td className="px-4 py-2">{task.startDate}</td>
-                    <td className="px-4 py-2">{task.endDate}</td>
+                    <td className="px-4 py-2">
+                      {new Date(task.startDate).toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td className="px-4 py-2">
+                      {new Date(task.endDate).toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
                     <td className="px-4 py-2">
                       <span
                         className={`px-2 py-1 rounded text-sm ${
@@ -163,7 +214,7 @@ function Tasks() {
           </div>
         </div>
       ))}
-
+  
 
       {showForm && selectedTask && (
         <div className="fixed inset-0 bg-opacity-40 flex justify-center items-center">
@@ -174,9 +225,21 @@ function Tasks() {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="border p-2 px-3 w-full mb-3 rounded-lg"
               placeholder="Task Name"
+            />
+
+            {/* Due Date */}
+            <input
+              type="date"
+              value={formData.dueDate}
+              onChange={(e) =>
+                setFormData({ ...formData, dueDate: e.target.value })
+              }
+              className="border p-2 px-3 w-full mb-3 rounded-lg"
             />
 
             {/* Priority */}
@@ -229,7 +292,6 @@ function Tasks() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

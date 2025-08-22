@@ -24,7 +24,6 @@ function Dashboard() {
 
           fetchedTasks.forEach((category) => {
             category.tasks.forEach((task) => {
-              console.log("Task status:", task.status);
               countsMap.set(task.status, (countsMap.get(task.status) || 0) + 1);
             });
           });
@@ -35,7 +34,7 @@ function Dashboard() {
           
         }
       } catch (error) {
-        console.error("Error fetching tasks:", error);
+        alert("Error fetching tasks:", error);
       }
     }
 

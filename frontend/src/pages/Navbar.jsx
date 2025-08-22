@@ -13,9 +13,12 @@ function Navbar() {
   return (
     <div className="flex flex-col bg-gray-100">
       <div className="w-full flex flex-row justify-end items-center h-16 shadow-lg">
+        
+        
         <div className="flex items-center ml-10 w-full ">
           <SearchBox />
         </div>
+
         {location.pathname !== "/tasks" && <Logout />}
         {location.pathname === "/tasks" && 
         <Button

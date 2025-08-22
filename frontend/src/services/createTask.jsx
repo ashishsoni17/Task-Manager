@@ -1,13 +1,22 @@
-import React, { use } from "react";
 import { useForm } from "react-hook-form";
 import { Input, Button } from "../components";
 import axios from "axios";
 
 function createTask({ setOpenForm }) {
+
   const { register, handleSubmit } = useForm();
 
   const createUserTask = async (data) => {
     try {
+
+      const startDate = new Date(data.startDate);
+      const endDate = new Date(data.endDate);
+
+      if(startDate > endDate) {
+        alert("start date cannot be greater than end date");
+        return ;      
+      }
+
       const response = await axios.post(
         "http://localhost:3000/create-tasks",
         data,
@@ -88,7 +97,7 @@ function createTask({ setOpenForm }) {
             <div>
               <Input
                 label="Priority"
-                type="select"
+                type="radio"
                 className="w-full mt-2 mb-4"
                 {...register("priority", { required: true })}
                 options={[
@@ -102,7 +111,7 @@ function createTask({ setOpenForm }) {
             <div>
               <Input
                 label="Status"
-                type="select"
+                type="radio"
                 className="w-full mt-2 mb-4"
                 {...register("status", { required: true })}
                 options={[
