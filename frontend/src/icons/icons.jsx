@@ -23,7 +23,7 @@ const Tasksicon = function(){
             </svg>
 }
 
-const Todoicon = function(){
+const Activityicon = function(){
     return  <svg
               xmlns="http://www.w3.org/2000/svg"
               height="26px"
@@ -60,5 +60,5 @@ const Helpicon = function(){
 }
 
 export {
-    Dashboardicon,Tasksicon,Todoicon,Projectsicon,Helpicon
+    Dashboardicon,Tasksicon,Activityicon,Projectsicon,Helpicon
 };

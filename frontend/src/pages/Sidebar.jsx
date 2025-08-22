@@ -1,14 +1,14 @@
 import { NavLink } from "react-router-dom";
 
 
-import { Dashboardicon, Helpicon, Projectsicon, Tasksicon, Todoicon } from "../icons/icons.jsx";
+import { Dashboardicon, Helpicon, Projectsicon, Tasksicon, Activityicon } from "../icons/icons.jsx";
 
 function Sidebar() {
 
   const options = [
     { name: "Dashboard", path : "/dashboard", icon: <Dashboardicon /> },
     { name: "Tasks", path: "/tasks", icon: <Tasksicon /> },
-    { name: "ToDo", path: "/todo", icon: <Todoicon /> },
+    { name: "Activity", path: "/activity", icon: <Activityicon /> },
     { name: "Projects", path: "/projects", icon: <Projectsicon /> },
     { name: "Help", path: "/help",  icon: <Helpicon /> },
   ] 
@@ -27,7 +27,7 @@ function Sidebar() {
                 key={item.name}
                 to={item.path}
                 className= {
-                  ({ isActive }) => `flex items-center px-5 py-2 text-md hover:bg-blue-200 ${isActive ? "bg-blue-200  border-l-4 border-blue-600 rounded-none" : ""}`
+                  ({ isActive }) => `flex items-center px-5 py-2 text-md hover:bg-blue-200 hover:z-5 hover:text-lg ${isActive ? " bg-blue-200 text-lg  border-l-4 border-blue-600 rounded-none" : ""}`
                 }
               >
                 {item.icon}
